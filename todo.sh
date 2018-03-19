@@ -16,6 +16,16 @@ cancellariga () {
 sed -i "/^$1 /d" $RAWLIST
 }
 
+usage () {
+echo
+echo "usage: ./todo.sh <add|del|mod|list> gg/mm/aaaa-HH:MM note"
+echo "                  add gg/mm/aaaa-HH:MM note"
+echo "                  del <num>"
+echo "                  mod <num> gg/mm/aaaa-HH:MM note"
+echo "                  list"
+echo
+}
+
 if [ ! -f $RAWLIST ]; then
    echo "0"> $RAWLIST 
 fi
@@ -32,7 +42,18 @@ case "$1" in
 		cancellariga $2
 		todolist
 	;;
-	*)	echo "comando non previsto, usage..."
+	mod)	cancellariga $2
+		echo "$2 $3 $4">>$RAWLIST
+		sort $RAWLIST>tmp.tmp
+		mv tmp.tmp $RAWLIST
+		todolist
+		;;
+	list|l)	todolist
+		;;
+	h|help)	usage
+	;;
+	*)	echo "comando non previsto."
+		usage
 	;;
 esac
 
