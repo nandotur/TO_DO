@@ -8,9 +8,13 @@ more ./todolist.txt
 }
 
 leggicontatore () {
-RIGA=$(tail -1 $RAWLIST)
-contatore=$(echo $RIGA | cut -f1 -d" ")
-echo $contatore
+if [ -s $RAWLIST ]
+then	RIGA=$(tail -1 $RAWLIST)
+	contatore=$(echo $RIGA | cut -f1 -d" ")
+	echo $contatore
+else	touch $RAWLIST
+	echo "0"
+fi
 }
 
 cancellariga () {
@@ -57,8 +61,9 @@ echo
 }
 
 if [ ! -f $RAWLIST ]; then
-   echo "0"> $RAWLIST 
+   touch $RAWLIST 
 fi
+
 [ $# -eq 0 ] && { todolist; exit 1; }
 
 #echo "parametro 1=[$1]"
@@ -69,7 +74,8 @@ case "$1" in
 		#echo "dataOK=[$dataOK]"
 		if  (( $dataOK ))
 		then	let contatore=$(leggicontatore)+1
-			echo "$contatore $2 $3">>$RAWLIST
+			#echo "$contatore $2 ${@:3}">>$RAWLIST
+			echo "$contatore ${@:2}">>$RAWLIST
 			todolist
 		else	errore_data
 			exit
@@ -81,7 +87,8 @@ case "$1" in
 	mod)	validadata $3
 	        if (( $dataOK ))
 		then	cancellariga $2
-			echo "$2 $3 $4">>$RAWLIST
+			#echo "$2 $3 ${@:4}">>$RAWLIST
+			echo ${@:2}>>$RAWLIST
 			sort $RAWLIST>tmp.tmp
 			mv tmp.tmp $RAWLIST
 			todolist
@@ -98,5 +105,4 @@ case "$1" in
 		usage
 	;;
 esac
-
 
